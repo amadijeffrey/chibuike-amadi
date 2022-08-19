@@ -1,10 +1,15 @@
-.App {
-  text-align: center;
+* {
+  padding:0;
+  margin: 0;
+  box-sizing: border-box;
+  font-family: 'Raleway';
 }
-
 .App-logo {
   height: 40vmin;
   pointer-events: none;
+}
+.active{
+  color: #5ece7b;
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -12,7 +17,9 @@
     animation: App-logo-spin infinite 20s linear;
   }
 }
-
+a{
+  text-decoration: none;
+}
 .App-header {
   background-color: #282c34;
   min-height: 100vh;
