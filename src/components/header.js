@@ -4,107 +4,10 @@ import { Query } from 'react-apollo';
 import gql from 'graphql-tag';
 import { connect } from 'react-redux';
 import setSelectedCurrency from '../actions/setSelectedCurrency';
+import setCategory from '../actions/setCategory';
 import { bindActionCreators } from 'redux';
 
-const Header = styled.div`
-  position: relative;
-  width: initial;
-  height: 80px;
-  left: 0px;
-  top: 0px;
-`;
-const Navigation = styled.div`
-  display: flex;
-  flex-direction: row;
-  align-items: flex-start;
-  padding: 0px;
-  position: absolute;
-  width: 234px;
-  height: 56px;
-  left: 101px;
-  bottom: 0px;
-`;
-const Logo = styled.span`
-  position: absolute;
-  width: 41px;
-  height: 41px;
-  left: 699px;
-  top: calc(50% - 41px / 2 + 4.5px);
-`;
-const Actions = styled.div`
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-end;
-  align-items: center;
-  padding: 0px;
-  gap: 22px;
-  position: absolute;
-  width: 204px;
-  height: 40px;
-  right: 101px;
-  top: 23px;
-`;
-const Span1 = styled.div`
-  padding: 4px 16px 32px 16px;
-  border-bottom: 2px solid #5ece7b;
-`;
-const Span = styled.div`
-  padding: 4px 16px 32px 16px;
-`;
 
-const P1 = styled.p`
-  font-family: "Raleway";
-  font-weight: 600;
-  font-size: 16px;
-  line-height: 120%;
-  text-transform: uppercase;
-`;
-const P = styled.p`
-  font-family: "Raleway";
-  font-weight: 400;
-  font-size: 16px;
-  line-height: 120%;
-  color: #1d1f22;
-  text-transform: uppercase;
-`;
-const DropDown = styled.div`
-position: absolute;
-width: 120px;
-top: 65px;
-background: #FFFFFF;
-box-shadow: -1px 16px 30px 1px rgba(210,215,217,1);
-`
-
-const Container = styled.div`
-padding:10px 38px 10px 20px;
-background: ${props =>  props.symbol === props.currency ? "#EEE": "#FFF"};
-&:hover{
-  background: #EEE;
-}
-`
-const CurrencySwitch= styled.div`
-  width: 45px;
-  height: 29px;
-`;
-const CurrencyContainer = styled.span`
-display: flex;
-flex-direction: row;
-align-items: center;
-padding: 0px 5px;
-`
-const Cart = styled.div`
-  width: 20px;
-  height: 20px;
-`;
-
-const Svg = styled.svg`
-position: absolute;
-left: 76.47%;
-right: 20.59%;
-top: 53.75%;
-bottom: 38.75%;
-color:red;
-`
 const DIFFERENT_CURRENCY = gql`
   query currencies{
     currencies{
@@ -125,14 +28,14 @@ class HeaderComponent extends Component{
       return(
         <Header>
         <Navigation>
-          <Span1>
-            <P1>all</P1>
-          </Span1>
-          <Span>
-            <P>tech</P>
+          <Span text='all' category={this.props.selectedCategory}>
+            <P text='all' category={this.props.selectedCategory} onClick={(e) => this.props.setCategory(e.target.textContent)}>all</P>
           </Span>
-          <Span>
-            <P>clothes</P>
+          <Span text='tech' category={this.props.selectedCategory}>
+            <P text='tech' category={this.props.selectedCategory} onClick={(e) => this.props.setCategory(e.target.textContent)}>tech</P>
+          </Span>
+          <Span text='clothes' category={this.props.selectedCategory}>
+            <P text='clothes' category={this.props.selectedCategory} onClick={(e) => this.props.setCategory(e.target.textContent)}>clothes</P>
           </Span>
         </Navigation>
         <Logo>
@@ -183,18 +86,13 @@ class HeaderComponent extends Component{
               </clipPath>
             </defs>
           </svg>
-          <select>
-        <option key='$'>usd</option>
-        <option>jpy</option>
-        <option>gbp</option>
-      </select>
         </Logo>
         <Actions>
           <CurrencySwitch>
-          
               <CurrencyContainer>
                   <p style={{height:'29px',fontSize:'25px'}}>{this.props.selectedCurrency}</p>
-                  <DropDown>
+                { 
+                 this.state.isCurrencyDropdown && <DropDown>
                   <Query query={DIFFERENT_CURRENCY}>
                     {({loading, error, data}) => {
                       if (loading) return <p>Loading...</p>
@@ -209,8 +107,14 @@ class HeaderComponent extends Component{
                     }}
                  </Query>
                  </DropDown>
+                }
               </CurrencyContainer>
-              <Svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path d="M143 352.3L7 216.3c-9.4-9.4-9.4-24.6 0-33.9l22.6-22.6c9.4-9.4 24.6-9.4 33.9 0l96.4 96.4 96.4-96.4c9.4-9.4 24.6-9.4 33.9 0l22.6 22.6c9.4 9.4 9.4 24.6 0 33.9l-136 136c-9.2 9.4-24.4 9.4-33.8 0z"/></Svg>
+               {
+                !this.state.isCurrencyDropdown ?
+                 <Svg onClick={() => this.setState(prevState => ({isCurrencyDropdown: !prevState.isCurrencyDropdown}))} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path d="M143 352.3L7 216.3c-9.4-9.4-9.4-24.6 0-33.9l22.6-22.6c9.4-9.4 24.6-9.4 33.9 0l96.4 96.4 96.4-96.4c9.4-9.4 24.6-9.4 33.9 0l22.6 22.6c9.4 9.4 9.4 24.6 0 33.9l-136 136c-9.2 9.4-24.4 9.4-33.8 0z"/></Svg>
+                :
+                 <Svg onClick={() => this.setState(prevState => ({isCurrencyDropdown: !prevState.isCurrencyDropdown}))} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path d="M177 159.7l136 136c9.4 9.4 9.4 24.6 0 33.9l-22.6 22.6c-9.4 9.4-24.6 9.4-33.9 0L160 255.9l-96.4 96.4c-9.4 9.4-24.6 9.4-33.9 0L7 329.7c-9.4-9.4-9.4-24.6 0-33.9l136-136c9.4-9.5 24.6-9.5 34-.1z"/></Svg>
+               }
           </CurrencySwitch>
           <Cart>
           <svg width="20" height="19" viewBox="0 0 20 19" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -228,10 +132,104 @@ class HeaderComponent extends Component{
 
  
 function mapDispatchToProps(dispatch){
-  return bindActionCreators({setSelectedCurrency},dispatch)
+  return bindActionCreators({setSelectedCurrency, setCategory},dispatch)
 }
 
-function mapStateToProps({selectedCurrency}){
- return {selectedCurrency}
+function mapStateToProps({selectedCurrency, selectedCategory}){
+ return {selectedCurrency, selectedCategory}
 }
+
+const Header = styled.div`
+  position: relative;
+  width: initial;
+  height: 80px;
+  left: 0px;
+  top: 0px;
+`;
+const Navigation = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  padding: 0px;
+  position: absolute;
+  width: 234px;
+  height: 56px;
+  left: 101px;
+  bottom: 0px;
+`;
+const Logo = styled.span`
+  position: absolute;
+  width: 41px;
+  height: 41px;
+  left: 699px;
+  top: calc(50% - 41px / 2 + 4.5px);
+`;
+const Actions = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 0px;
+  gap: 22px;
+  position: absolute;
+  width: 204px;
+  height: 40px;
+  right: 101px;
+  top: 23px;
+`;
+
+const Span = styled.div`
+  padding: 4px 16px 32px 16px;
+  border-bottom: ${props => props.text === props.category ? '2px solid #5ece7b' : 'none'}
+`;
+
+
+const P = styled.p`
+  font-family: "Raleway";
+  font-weight: ${props => props.text === props.category ? 600: 400 };
+  font-size: 16px;
+  line-height: 120%;
+  color: #1d1f22;
+  text-transform: uppercase;
+`;
+const DropDown = styled.div`
+position: absolute;
+width: 120px;
+top: 65px;
+background: #FFFFFF;
+box-shadow: -1px 16px 30px 1px rgba(210,215,217,1);
+`
+
+const Container = styled.div`
+padding:10px 38px 10px 20px;
+background: ${props =>  props.symbol === props.currency ? "#EEE": "#FFF"};
+&:hover{
+  background: #EEE;
+}
+`
+const CurrencySwitch= styled.div`
+  width: 45px;
+  height: 29px;
+`;
+const CurrencyContainer = styled.span`
+display: flex;
+flex-direction: row;
+align-items: center;
+padding: 0px 5px;
+`
+const Cart = styled.div`
+  width: 20px;
+  height: 20px;
+`;
+
+const Svg = styled.svg`
+position: absolute;
+left: 76.47%;
+right: 20.59%;
+top: 53.75%;
+bottom: 38.75%;
+&:hover {
+  cursor:pointer;
+}
+`
 export default connect(mapStateToProps,mapDispatchToProps)(HeaderComponent)

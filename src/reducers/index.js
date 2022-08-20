@@ -1,8 +1,10 @@
 import { combineReducers } from "@reduxjs/toolkit";
-import selectedCurrencyReducer from './selectedCurrencyReducer'
+import selectedCurrencyReducer from './selectedCurrencyReducer';
+import selectedCategoryReducer from "./setCategoryReducer";
 
 const rootReducer = combineReducers({
-    selectedCurrency: selectedCurrencyReducer
+    selectedCurrency: selectedCurrencyReducer,
+    selectedCategory: selectedCategoryReducer
 })
 
 export default rootReducer
