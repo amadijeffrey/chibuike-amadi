@@ -1,5 +1,8 @@
 import React, {Component} from 'react';
 import styled from 'styled-components';
+import {connect} from 'react-redux'
+import createCartItem from '../actions/createCartItem';
+import Swal from 'sweetalert2';
 
 
 class ProductDetail extends Component{
@@ -8,22 +11,35 @@ class ProductDetail extends Component{
 
       this.state = {}
       this.setDefaultSelectedState = this.setDefaultSelectedState.bind(this)
-     }
-
-     setDefaultSelectedState(){
-      const { attributes } = this.props.data
-      attributes.forEach( ({name, items}) => {
-          return this.setState({...this.state, [`selected${name}`]: items[0].value })
-      })
+      this.selected = this.selected.bind(this)
      }
 
      componentDidMount(){
       this.setDefaultSelectedState()
      }
 
+     setDefaultSelectedState(){
+      const { attributes } = this.props.data
+      if(!attributes) return
+      attributes.forEach( ({ name }) => {
+          return this.setState({...this.state, [`selected${name}`]: null })
+      })
+     }
+
+     checkForSelectedAttribute(selectedPrice){
+      for(const keys in this.state){
+        if(this.state[keys] === null) return Swal.fire("you haven't selected all attributes")
+        this.props.createCartItem(this.props.data, this.state, selectedPrice)
+      }
+     }
+     
+     selected(item, name){
+      this.setState({[`selected${name}`]: item.value})
+      item.selected = true
+     }
+
     render(){
         const {name, brand, attributes, prices, description, selectedCurrency } = this.props.data
-        console.log(this.state)
         
         const newPriceArray = prices.filter(price => price.currency.symbol === selectedCurrency)
         const newPrice = newPriceArray[0].amount
@@ -43,8 +59,8 @@ class ProductDetail extends Component{
                               })
                             :
                               items.map(({value}) => {
-                                return <Div onClick={() => this.setState({[`selected${name}`]: value})} background={value} selectedColor={this.state[`selected${name}`]}>
-                                <SwatchBox key={value} background={value} />
+                                return <Div key={value} onClick={() => this.setState({[`selected${name}`]: value})} background={value} selectedColor={this.state[`selected${name}`]}>
+                                <SwatchBox background={value} />
                                 </Div>
                               })
                             }
@@ -53,8 +69,9 @@ class ProductDetail extends Component{
                       }
                       <Title style={{marginTop: '20px'}}>price:</Title>
                       <Price>{`${selectedCurrency} ${newPrice}`}</Price>
-                      <Button>
-                        <p style={{fontWeight: 600,fontSize:'16px'}}>ADD TO CART</p></Button>
+                      <Button onClick={() => this.checkForSelectedAttribute(newPrice)}>
+                        <p style={{fontWeight: 600,fontSize:'16px'}}>ADD TO CART</p>
+                      </Button>
                       <p dangerouslySetInnerHTML={{__html: description}}/>
                     </Box>
         )
@@ -62,7 +79,8 @@ class ProductDetail extends Component{
     }
 }
 
-const Price = styled.p`
+
+export const Price = styled.p`
 font-weight:700;
 font-size:24px;
 line-height:160%;
@@ -82,7 +100,7 @@ margin: 10px 0px;
   cursor:pointer;
 }
 `
-const Title = styled.p`
+export const Title = styled.p`
 font-weight: 700;
 font-size: 18px;
 line-height: 18px;
@@ -90,7 +108,7 @@ margin-bottom: 5px;
 text-transform: uppercase;
 font-family: 'Roboto';
 `
-const TextBox = styled.div`
+export const TextBox = styled.div`
 width: 63px;
 height: 45px;
 background: ${props => props.text === props.value ? 'black': 'white'};
@@ -104,14 +122,14 @@ line-height: 45px;
   cursor:pointer;
 }
 `
-const SwatchBox = styled.div`
+export const SwatchBox = styled.div`
 width: 32px;
 height: 32px;
 background: ${props => props.background};
 margin:2px;
 border: 1px solid lightgray;
 `
-const Div = styled.div`
+export const Div = styled.div`
 margin-right: 5px;
 display: inline-block;
 border: ${props => props.background === props.selectedColor ? '2px solid #5ECE7B': 'none'};
@@ -120,18 +138,17 @@ border: ${props => props.background === props.selectedColor ? '2px solid #5ECE7B
 }
 `
 
-const Contain = styled.div`
+export const Contain = styled.div`
 margin-top:20px;
 `
-const Brand = styled.p`
+export const Brand = styled.p`
 font-weight: 600;
 font-size: 30px;
 color: #1D1F22;
 margin-bottom:16px;
 `
-const Box = styled.div`
+export const Box = styled.div`
 width:292px;
-
 `
 
-export default ProductDetail
+export default connect(null,{createCartItem})(ProductDetail)

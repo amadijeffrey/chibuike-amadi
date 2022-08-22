@@ -51,10 +51,9 @@ class ProductDescription extends Component{
 
                 const selectedCurrency = this.props.selectedCurrency
                 const {prices, name, brand, gallery, description, attributes} = data.product
-                const productData = {prices, name, brand, description, attributes, selectedCurrency}
-                console.log(attributes)
+                const productData = {prices, name, brand, description, attributes, selectedCurrency, gallery}
                 return (
-                <div style={{margin: '80px 216px 178px 60px', display: 'flex', justifyContent: 'space-between'}}>
+                <div style={{margin: '80px 216px 100px 101px', display: 'flex', justifyContent: 'space-between'}}>
                   <ProductImage gallery={gallery}/>
                   <ProductDetail data={productData}/>
                 </div>
