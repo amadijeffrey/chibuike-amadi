@@ -50,12 +50,12 @@ class ProductDescription extends Component{
                 if (error) return <p>{`Error! ${error.message}`}</p>
 
                 const selectedCurrency = this.props.selectedCurrency
-                const {prices, name, brand, gallery, description, attributes} = data.product
-                const productData = {prices, name, brand, description, attributes, selectedCurrency, gallery}
+                const {prices, name, brand, gallery, description, attributes, inStock} = data.product
+                const productData = {prices, name, brand, description, attributes, selectedCurrency, gallery, inStock}
                 return (
                 <div style={{margin: '80px 216px 100px 101px', display: 'flex', justifyContent: 'space-between'}}>
                   <ProductImage gallery={gallery}/>
-                  <ProductDetail data={productData}/>
+                  <ProductDetail data={productData}  />
                 </div>
                 )
             }}

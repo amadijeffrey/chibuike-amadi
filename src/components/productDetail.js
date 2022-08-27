@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import styled from 'styled-components';
 import {connect} from 'react-redux'
-import createCartItem from '../actions/createCartItem';
+import { createCartItem } from '../actions/cartItemActions';
 import Swal from 'sweetalert2';
 
 
@@ -11,7 +11,7 @@ class ProductDetail extends Component{
 
       this.state = {}
       this.setDefaultSelectedState = this.setDefaultSelectedState.bind(this)
-      this.selected = this.selected.bind(this)
+      this.checkForSelectedAttribute = this.checkForSelectedAttribute.bind(this)
      }
 
      componentDidMount(){
@@ -20,29 +20,24 @@ class ProductDetail extends Component{
 
      setDefaultSelectedState(){
       const { attributes } = this.props.data
-      if(!attributes) return
+      if(attributes.length === 0) return
       attributes.forEach( ({ name }) => {
           return this.setState({...this.state, [`selected${name}`]: null })
       })
      }
 
-     checkForSelectedAttribute(selectedPrice){
+     checkForSelectedAttribute(){
+      if(Object.keys(this.state).length === 0)return this.props.createCartItem(this.props.data)
       for(const keys in this.state){
-        if(this.state[keys] === null) return Swal.fire("you haven't selected all attributes")
-        this.props.createCartItem(this.props.data, this.state, selectedPrice)
+        if(this.state[keys] === null)return Swal.fire("you haven't selected all attributes")
       }
+      this.props.createCartItem(this.props.data, this.state)
      }
      
-     selected(item, name){
-      this.setState({[`selected${name}`]: item.value})
-      item.selected = true
-     }
-
     render(){
-        const {name, brand, attributes, prices, description, selectedCurrency } = this.props.data
-        
-        const newPriceArray = prices.filter(price => price.currency.symbol === selectedCurrency)
-        const newPrice = newPriceArray[0].amount
+        const {name, brand, attributes, prices, description, selectedCurrency, inStock } = this.props.data
+        const newPrice = selectedPrice(prices,selectedCurrency)
+      
 
         return(
                     <Box>
@@ -69,7 +64,8 @@ class ProductDetail extends Component{
                       }
                       <Title style={{marginTop: '20px'}}>price:</Title>
                       <Price>{`${selectedCurrency} ${newPrice}`}</Price>
-                      <Button onClick={() => this.checkForSelectedAttribute(newPrice)}>
+                      <Button disabled={!inStock}
+                      onClick={() => this.checkForSelectedAttribute()}>
                         <p style={{fontWeight: 600,fontSize:'16px'}}>ADD TO CART</p>
                       </Button>
                       <p dangerouslySetInnerHTML={{__html: description}}/>
@@ -79,6 +75,10 @@ class ProductDetail extends Component{
     }
 }
 
+export function  selectedPrice(priceArray, selectedCurrency){
+  const newPriceArray = priceArray.filter(price => price.currency.symbol === selectedCurrency)
+  return  newPriceArray[0].amount
+}
 
 export const Price = styled.p`
 font-weight:700;
