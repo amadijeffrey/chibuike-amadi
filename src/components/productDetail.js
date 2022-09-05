@@ -94,7 +94,30 @@ class ProductDetail extends Component{
                 </Button>
                 {parse(description)}
               </Box>
-             
+              {
+               this.state.isInCart && <ModalContainer onClick={() => this.setState({isInCart: false})}>
+                <MiniCart>
+                  {
+                    this.state.itemsAlreadyInCart.map((cartItem) => {
+                      return <div style={{display: 'flex',marginBottom: '10px',justifyContent: 'space-between'}} >
+                      <div>
+                        { 
+                         Object.keys(cartItem.selectedAttributes).map(attributes => {
+                         return <Heading>{`${attributes}: ${cartItem.selectedAttributes[attributes]}`}</Heading>
+                         })
+                        }  
+                      </div>
+                        <Group style={{marginRight:'0px', marginLeft: '20px'}}>
+                        <QuantityButton onClick={() => this.props.increaseQuantity(cartItem)}> +</QuantityButton>
+                        <p>{cartItem.qty}</p>
+                        <QuantityButton onClick={() => this.props.decreaseQuantity(cartItem)}>-</QuantityButton>
+                        </Group>
+                      </div>
+                    })
+                  }
+                </MiniCart>
+               </ModalContainer>
+              }
              </>
 
         )
