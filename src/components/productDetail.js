@@ -3,82 +3,115 @@ import styled from 'styled-components';
 import {connect} from 'react-redux'
 import { createCartItem } from '../actions/cartItemActions';
 import Swal from 'sweetalert2';
+import {Heading, QuantityButton, Group} from './minicartItem'
+import { increaseQuantity } from '../actions/cartItemActions'
+import { decreaseQuantity } from '../actions/cartItemActions'
+import parse from 'html-react-parser'
 
 
 class ProductDetail extends Component{
      constructor(props){
       super(props)
 
-      this.state = {}
-      this.setDefaultSelectedState = this.setDefaultSelectedState.bind(this)
-      this.checkForSelectedAttribute = this.checkForSelectedAttribute.bind(this)
+      const { attributes } = this.props.data
+      if(attributes.length === 0) return
+      let selected = {}
+      attributes.forEach( ({ name }) => {
+        selected[name] = null
+      })
+
+
+      this.state = {isInCart: false, selected, itemsAlreadyInCart: [] }
+      this.setSelectedState = this.setSelectedState.bind(this)
+      this.findItemsInCart = this.findItemsInCart.bind(this)
+      this.addToCart = this.addToCart.bind(this)
      }
 
      componentDidMount(){
-      this.setDefaultSelectedState()
+     this.findItemsInCart()
      }
 
-     setDefaultSelectedState(){
-      const { attributes } = this.props.data
-      if(attributes.length === 0) return
-      attributes.forEach( ({ name }) => {
-          return this.setState({...this.state, [`selected${name}`]: null })
-      })
+     componentDidUpdate(prevProps){
+      if(this.props.cart !== prevProps.cart){
+        this.findItemsInCart()
+    }
      }
 
-     checkForSelectedAttribute(){
-      if(Object.keys(this.state).length === 0)return this.props.createCartItem(this.props.data)
-      for(const keys in this.state){
-        if(this.state[keys] === null)return Swal.fire("you haven't selected all attributes")
+     findItemsInCart(){
+      const itemsAlreadyInCart = this.props.cart.filter(cartItem => cartItem.id === this.props.id)
+      this.setState({itemsAlreadyInCart})
+     }
+
+     setSelectedState(name,value){
+      this.setState( prevState => ({selected: {...prevState.selected, [name]: value}}))
+     }
+
+     addToCart(){
+      const {itemsAlreadyInCart, selected} = this.state
+      const foundProduct =  itemsAlreadyInCart.find(cartItem => JSON.stringify(cartItem.selectedAttributes) === JSON.stringify(selected))
+      if(itemsAlreadyInCart.length > 0 && foundProduct) return this.setState({isInCart: true})
+
+      const {inStock} = this.props.data
+      if(!inStock) return Swal.fire("product is out of stock")
+      if(Object.keys(selected).length === 0)return this.props.createCartItem(this.props.data)
+      for(const keys in selected){
+        if(selected[keys] === null)return Swal.fire("you haven't selected all attributes")
       }
-      this.props.createCartItem(this.props.data, this.state)
+      this.props.createCartItem(this.props.data, selected)
      }
      
     render(){
-        const {name, brand, attributes, prices, description, selectedCurrency, inStock } = this.props.data
+        const {name, brand, attributes, prices, description, selectedCurrency } = this.props.data
         const newPrice = selectedPrice(prices,selectedCurrency)
-      
-
         return(
-                    <Box>
-                      <Brand>{brand}</Brand>
-                      <Brand style={{fontWeight:400}}>{name}</Brand>
-                      {
-                        attributes.map(({name,type,items})=> {
-                          return <Contain key={name}>
+             <>
+              <Box>
+                <Brand>{brand}</Brand>
+                <Brand style={{fontWeight:400}}>{name}</Brand>
+                {
+                  attributes.map(({name,type,items})=> {
+                    return <Contain key={name}>
                             <Title>{`${name}:`}</Title>
                             { 
-                             type === 'text' ? 
+                              type === 'text' ? 
                               items.map(({value}) => {
-                                return <TextBox key={value} onClick={() => this.setState({[`selected${name}`]: value})} value={value} text={this.state[`selected${name}`]}>{value}</TextBox>
+                                return <TextBox key={value} onClick={() => this.setSelectedState(name, value)} value={value} text={this.state.selected[name]}>{value}</TextBox>
                               })
                             :
                               items.map(({value}) => {
-                                return <Div key={value} onClick={() => this.setState({[`selected${name}`]: value})} background={value} selectedColor={this.state[`selected${name}`]}>
+                                return <Div key={value} onClick={() => this.setSelectedState(name, value)} background={value} selectedColor={this.state.selected[name]}>
                                 <SwatchBox background={value} />
                                 </Div>
                               })
                             }
                           </Contain>
-                        })
-                      }
-                      <Title style={{marginTop: '20px'}}>price:</Title>
-                      <Price>{`${selectedCurrency} ${newPrice}`}</Price>
-                      <Button disabled={!inStock}
-                      onClick={() => this.checkForSelectedAttribute()}>
-                        <p style={{fontWeight: 600,fontSize:'16px'}}>ADD TO CART</p>
-                      </Button>
-                      <p dangerouslySetInnerHTML={{__html: description}}/>
-                    </Box>
+                  })
+                }
+                <Title>price:</Title>
+                <Price>{`${selectedCurrency} ${newPrice}`}</Price>
+                <Button  onClick={() => this.addToCart()}>
+                  <p style={{fontWeight: 600,fontSize:'16px'}}>ADD TO CART</p>
+                </Button>
+                {parse(description)}
+              </Box>
+             
+             </>
+
         )
       
     }
 }
 
 export function  selectedPrice(priceArray, selectedCurrency){
-  const newPriceArray = priceArray.filter(price => price.currency.symbol === selectedCurrency)
-  return  newPriceArray[0].amount
+  const newPriceArray = priceArray.find(price => price.currency.symbol === selectedCurrency)
+  return  newPriceArray.amount
 }
+
+function mapStateToProps({cart}){
+  return {cart}
+}
+
+export default connect(mapStateToProps, {createCartItem, increaseQuantity, decreaseQuantity})(ProductDetail)
 
 export const Price = styled.p`
 font-weight:700;
@@ -86,6 +119,27 @@ font-size:24px;
 line-height:160%;
 color: black;
 `
+const ModalContainer = styled.div`
+position: fixed;
+top: 80px;
+bottom: 0px;
+left: 0px;
+right: 0px;
+background-color: rgba(0,0,0,0.5);
+`
+const MiniCart = styled.div`
+padding: 10px;
+position: absolute;
+right: 100px;
+top: 20%;
+background: white;
+z-index:20;
+width: auto;
+height: auto;
+max-height: 85%;
+overflow-y:auto;
+`
+
 const Button = styled.button`
 display: flex;
 justify-content: center;
@@ -104,6 +158,7 @@ export const Title = styled.p`
 font-weight: 700;
 font-size: 18px;
 line-height: 18px;
+margin-top: 20px;
 margin-bottom: 5px;
 text-transform: uppercase;
 font-family: 'Roboto';
@@ -118,24 +173,19 @@ display: inline-block;
 text-align: center;
 margin-right: 10px;
 line-height: 45px;
-&:hover{
-  cursor:pointer;
-}
+
 `
 export const SwatchBox = styled.div`
 width: 32px;
 height: 32px;
 background: ${props => props.background};
-margin:2px;
+margin:1px;
 border: 1px solid lightgray;
 `
 export const Div = styled.div`
 margin-right: 5px;
 display: inline-block;
 border: ${props => props.background === props.selectedColor ? '2px solid #5ECE7B': 'none'};
-&:hover{
-  cursor:pointer;
-}
 `
 
 export const Contain = styled.div`
@@ -148,7 +198,6 @@ color: #1D1F22;
 margin-bottom:16px;
 `
 export const Box = styled.div`
-width:292px;
+width: 292px;
 `
 
-export default connect(null,{createCartItem})(ProductDetail)

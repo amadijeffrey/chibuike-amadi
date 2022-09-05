@@ -5,10 +5,10 @@ import { DECREASE_QUANTITY } from "../actions/cartItemActions";
 function itemsInCartReducer(state=[],action){
   switch(action.type){
     case CREATE_CART_ITEM: 
-    const foundProduct = state.find(cartItem => JSON.stringify(cartItem) === JSON.stringify(action.payload))
+    const foundProduct = state.find(cartItem => JSON.stringify(cartItem.selectedAttributes) === JSON.stringify(action.payload.selectedAttributes))
     if(foundProduct){
       return state.map( cartItem => 
-        JSON.stringify(cartItem) === JSON.stringify(action.payload) ?
+        JSON.stringify(cartItem.selectedAttributes) === JSON.stringify(action.payload.selectedAttributes) ?
         {...cartItem, qty: cartItem.qty + 1}
         :
         cartItem
@@ -18,7 +18,7 @@ function itemsInCartReducer(state=[],action){
       
     case INCREASE_QUANTITY:
     return state.map( cartItem => 
-      JSON.stringify(cartItem) === JSON.stringify(action.payload) ?
+      JSON.stringify(cartItem.selectedAttributes) === JSON.stringify(action.payload.selectedAttributes) ?
       {...cartItem, qty: cartItem.qty + 1}
       :
       cartItem
@@ -26,7 +26,7 @@ function itemsInCartReducer(state=[],action){
 
     case DECREASE_QUANTITY:
     return state.reduce( (acc,cartItem) => {
-      if(JSON.stringify(cartItem) === JSON.stringify(action.payload)){
+      if(JSON.stringify(cartItem.selectedAttributes) === JSON.stringify(action.payload.selectedAttributes)){
         if(cartItem.qty === 1) return acc
         return [...acc, {...cartItem, qty: cartItem.qty - 1}]
       }

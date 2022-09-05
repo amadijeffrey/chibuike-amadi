@@ -4,8 +4,8 @@ export const DECREASE_QUANTITY = 'decrease_quantity'
 
 
 export function createCartItem(data, selectedAttributes=null){
- const {name, brand, attributes, gallery, prices } = data
- const cartItem = {name, brand, prices, qty: 1, gallery, attributes, selectedAttributes}
+ const {name, brand, attributes, gallery, prices, id } = data
+ const cartItem = {name, brand, prices, qty: 1, gallery, attributes, selectedAttributes, id}
 
  return {
     type: CREATE_CART_ITEM,
