@@ -30,9 +30,9 @@ class CartItem extends Component{
                       return <TextBox key={value} value={value} text={selectedAttributes[name]}>{value}</TextBox>
                     })
                   :
-                    items.map(({value}) => {
-                      return <Div key={value} background={value}  selectedColor={selectedAttributes[name]}>
-                      <SwatchBox background={value} />
+                    items.map(({displayValue}) => {
+                      return <Div key={displayValue} background={displayValue}  selectedColor={selectedAttributes[name]}>
+                      <SwatchBox background={displayValue} />
                       </Div>
                     })
                   }

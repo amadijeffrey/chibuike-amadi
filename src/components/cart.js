@@ -51,7 +51,7 @@ class Cart extends Component{
             <Container>
               {
                 this.props.cart.map( cartItem => {
-                    return <CartItem key={cartItem.id && cartItem.selectedAttributes} cartDetail={cartItem} selectedCurrency={this.props.selectedCurrency}/>
+                    return <CartItem key={JSON.stringify(cartItem.selectedAttributes)} cartDetail={cartItem} selectedCurrency={this.props.selectedCurrency}/>
                 })
              }
                 <Total>

@@ -20,7 +20,7 @@ root.render(
       <ApolloProvider client={client}>
         <App />
       </ApolloProvider>
-  </PersistGate>
+    </PersistGate>
   </Provider>
 );
 

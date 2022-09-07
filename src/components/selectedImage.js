@@ -14,7 +14,7 @@ render(){
 
 const ImageBox = styled.div`
 width: 500px;
-height: 511px;
+height: 511px; 
 `
 
 export default SelectedImage

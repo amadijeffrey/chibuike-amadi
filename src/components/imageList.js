@@ -7,12 +7,12 @@ class ImageList extends Component{
        <Container>
          {
           this.props.gallery.map(imageUrl => {
-                        return  <ImageBox key={imageUrl}>
-                                  <img src={imageUrl} style={{height:'100%', width: '100%'}} 
-                                  onClick={() => this.props.setSelectedImage(imageUrl)} alt='other images' />
-                                </ImageBox>
-                        })
-         }
+               return  <ImageBox key={imageUrl}>
+                           <img src={imageUrl} style={{height:'100%', width: '100%'}} 
+                           onClick={() => this.props.setSelectedImage(imageUrl)} alt='other images' />
+                        </ImageBox>
+               })
+}
        </Container>
     )
  }

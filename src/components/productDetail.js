@@ -13,6 +13,7 @@ class ProductDetail extends Component{
      constructor(props){
       super(props)
 
+      //create a selectedAttributes object with properties set to null
       const { attributes } = this.props.data
       if(attributes.length === 0) return
       let selected = {}
@@ -48,12 +49,18 @@ class ProductDetail extends Component{
 
      addToCart(){
       const {itemsAlreadyInCart, selected} = this.state
+
+      //check if product is in stock
+      const {inStock} = this.props.data
+      if(!inStock) return Swal.fire("product is out of stock")
+
+      //check if product is already in cart
       const foundProduct =  itemsAlreadyInCart.find(cartItem => JSON.stringify(cartItem.selectedAttributes) === JSON.stringify(selected))
       if(itemsAlreadyInCart.length > 0 && foundProduct) return this.setState({isInCart: true})
 
-      const {inStock} = this.props.data
-      if(!inStock) return Swal.fire("product is out of stock")
       if(Object.keys(selected).length === 0)return this.props.createCartItem(this.props.data)
+
+      //check if all attributes have been selected
       for(const keys in selected){
         if(selected[keys] === null)return Swal.fire("you haven't selected all attributes")
       }
@@ -78,9 +85,9 @@ class ProductDetail extends Component{
                                 return <TextBox key={value} onClick={() => this.setSelectedState(name, value)} value={value} text={this.state.selected[name]}>{value}</TextBox>
                               })
                             :
-                              items.map(({value}) => {
-                                return <Div key={value} onClick={() => this.setSelectedState(name, value)} background={value} selectedColor={this.state.selected[name]}>
-                                <SwatchBox background={value} />
+                              items.map(({displayValue}) => {
+                                return <Div key={displayValue} onClick={() => this.setSelectedState(name, displayValue)} background={displayValue} selectedColor={this.state.selected[name]}>
+                                <SwatchBox background={displayValue} />
                                 </Div>
                               })
                             }
@@ -95,15 +102,16 @@ class ProductDetail extends Component{
                 {parse(description)}
               </Box>
               {
+                //display modal only when product is already in the cart
                this.state.isInCart && <ModalContainer onClick={() => this.setState({isInCart: false})}>
                 <MiniCart>
                   {
                     this.state.itemsAlreadyInCart.map((cartItem) => {
-                      return <div style={{display: 'flex',marginBottom: '10px',justifyContent: 'space-between'}} >
+                      return <div key={JSON.stringify(cartItem.selectedAttributes)} style={{display: 'flex',marginBottom: '10px',justifyContent: 'space-between'}} >
                       <div>
                         { 
                          Object.keys(cartItem.selectedAttributes).map(attributes => {
-                         return <Heading>{`${attributes}: ${cartItem.selectedAttributes[attributes]}`}</Heading>
+                         return <Heading key={attributes}>{`${attributes}: ${cartItem.selectedAttributes[attributes]}`}</Heading>
                          })
                         }  
                       </div>
@@ -153,7 +161,7 @@ background-color: rgba(0,0,0,0.5);
 const MiniCart = styled.div`
 padding: 10px;
 position: absolute;
-right: 100px;
+right: 200px;
 top: 20%;
 background: white;
 z-index:20;

@@ -20,7 +20,7 @@ class CartModal extends Component{
                   <div style={{height:'auto', maxHeight: '350px', overflowY: 'auto'}}>
                   {
                     this.props.cart.map( cartItem => {
-                        return <MiniCartItem key={cartItem.selectedAttributes} cartDetail={cartItem} selectedCurrency={this.props.selectedCurrency}/>
+                        return <MiniCartItem key={JSON.stringify(cartItem.selectedAttributes)} cartDetail={cartItem} selectedCurrency={this.props.selectedCurrency}/>
                     })
                   }
                   </div>
