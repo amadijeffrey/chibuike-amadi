@@ -6,7 +6,7 @@ class SelectedImage extends Component{
 render(){
     return(
         <ImageBox>
-             <img src={this.props.selectedImage} style={{height:'100%', width: '100%'}} alt='other images' />                        
+             <img src={this.props.selectedImage} style={{height:'100%', width: '100%', objectFit: 'contain'}} alt='other images' />                        
         </ImageBox>
     )
  }
@@ -14,7 +14,6 @@ render(){
 
 const ImageBox = styled.div`
 width: 500px;
-height: 511px; 
 `
 
 export default SelectedImage

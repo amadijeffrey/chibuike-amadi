@@ -5,6 +5,7 @@ import { selectedPrice } from './productDetail'
 import { increaseQuantity } from '../actions/cartItemActions'
 import { decreaseQuantity } from '../actions/cartItemActions'
 import Carousel from './carousel'
+import ImageSlide from './imageSlide'
 
 class MiniCartItem extends Component{
  
@@ -45,7 +46,14 @@ render(){
                 <p>{qty}</p>
                 <QuantityButton onClick={() => this.props.decreaseQuantity(this.props.cartDetail)}>-</QuantityButton>
                 </Group>
-                <Carousel width={121} imgUrls={gallery}/>
+                {/* <Carousel width={121} imgUrls={gallery}/> */}
+                <div className='carouselScrollBar' style={{display: 'flex', height: '100%', width: '121px', maxWidth: '121px', overflowX: 'auto'}}>
+                   {
+                    gallery.map((image, i) => {
+                        return <ImageSlide key={i} url={image}/>
+                    })
+                   } 
+                </div>
             </SecondContainer>
         </Container>
     )

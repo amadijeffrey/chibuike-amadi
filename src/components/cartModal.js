@@ -16,8 +16,8 @@ class CartModal extends Component{
         return (
             <ModalContainer onClick={this.props.close}>
                  <MiniCart onClick={(e) => e.stopPropagation()}>
-                  <Heading><span style={{fontWeight: '700'}}>My Bag, </span>{`${displayNoOfCartItem(this.props.cart)} items`}</Heading>
-                  <div style={{height:'auto', maxHeight: '350px', overflowY: 'auto'}}>
+                  <Heading><span style={{fontWeight: '700'}}>My Bag, </span>{displayNoOfCartItem(this.props.cart) ? `${displayNoOfCartItem(this.props.cart)} items` : 'no item'}</Heading>
+                  <div className='carouselScrollBar' style={{height:'auto', maxHeight: '350px', overflowY: 'auto'}}>
                   {
                     this.props.cart.map( cartItem => {
                         return <MiniCartItem key={JSON.stringify(cartItem.selectedAttributes)} cartDetail={cartItem} selectedCurrency={this.props.selectedCurrency}/>
@@ -30,7 +30,7 @@ class CartModal extends Component{
                     VIEW BAG
                   </Button>
                   </Link>
-                  <Button style={{color: 'white',border: '1px solid lightgray', background: '#5ECE7B',marginLeft: '12px'}}>
+                  <Button style={{color: 'white',border: '1px solid lightgray', background: '#5ECE7B', marginLeft: '4%'}}>
                     CHECKOUT
                   </Button>
                </MiniCart>
@@ -70,7 +70,7 @@ right: 100px;
 top: 0px;
 background: white;
 z-index:20;
-width: 450px;
+width: 430px;
 height: auto;
 `
 const Heading = styled.h2`

@@ -15,11 +15,14 @@ class ProductDetail extends Component{
 
       //create a selectedAttributes object with properties set to null
       const { attributes } = this.props.data
-      if(attributes.length === 0) return
       let selected = {}
-      attributes.forEach( ({ name }) => {
-        selected[name] = null
-      })
+      if(attributes.length === 0) {
+        selected = null
+      }else{
+        attributes.forEach( ({ name }) => {
+          selected[name] = null
+        })
+     }
 
 
       this.state = {isInCart: false, selected, itemsAlreadyInCart: [] }
@@ -54,11 +57,12 @@ class ProductDetail extends Component{
       const {inStock} = this.props.data
       if(!inStock) return Swal.fire("product is out of stock")
 
+      //add product to cart if there are no attributes
+      if(selected === null)return this.props.createCartItem(this.props.data)
+
       //check if product is already in cart
       const foundProduct =  itemsAlreadyInCart.find(cartItem => JSON.stringify(cartItem.selectedAttributes) === JSON.stringify(selected))
       if(itemsAlreadyInCart.length > 0 && foundProduct) return this.setState({isInCart: true})
-
-      if(Object.keys(selected).length === 0)return this.props.createCartItem(this.props.data)
 
       //check if all attributes have been selected
       for(const keys in selected){
@@ -135,7 +139,7 @@ class ProductDetail extends Component{
 
 export function  selectedPrice(priceArray, selectedCurrency){
   const newPriceArray = priceArray.find(price => price.currency.symbol === selectedCurrency)
-  return  newPriceArray.amount
+  return  newPriceArray.amount.toFixed(2)
 }
 
 function mapStateToProps({cart}){

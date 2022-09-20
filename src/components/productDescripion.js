@@ -46,7 +46,6 @@ class ProductDescription extends Component{
             {({loading, error, data}) => {
                 if(loading) return <p>Loading...</p>
                 if (error) return <p>{`Error! ${error.message}`}</p>
-
                 const selectedCurrency = this.props.selectedCurrency
                 const {prices, name, brand, gallery, description, attributes, inStock, id} = data.product
                 const productData = {prices, name, brand, description, attributes, selectedCurrency, gallery, inStock, id}

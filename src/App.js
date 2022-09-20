@@ -1,5 +1,5 @@
 import './App.css';
-import {BrowserRouter, Switch, Route} from 'react-router-dom'
+import {BrowserRouter, Switch, Route, Redirect} from 'react-router-dom'
 import ProductDescription from './components/productDescripion';
 import ProductCategory from './components/productCategories';
 import Cart from './components/cart'
@@ -13,8 +13,9 @@ function App() {
       <Header />
       <Switch>
         <Route path='/cart' component={Cart} />
-        <Route path='/:id' component={ProductDescription} />
-        <Route path='/' component={ProductCategory} />
+        <Route path='/:category/:id' component={ProductDescription} />
+        <Route path='/:category' component={ProductCategory} />
+        <Redirect from='/' to='/all' /> 
       </Switch>
       </BrowserRouter>
     </div>

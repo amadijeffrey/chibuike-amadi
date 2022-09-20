@@ -8,8 +8,9 @@
   height: 40vmin;
   pointer-events: none;
 }
-.active{
-  color: #5ece7b;
+
+a{
+  text-decoration: none;
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -40,4 +41,22 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+.carouselScrollBar::-webkit-scrollbar {
+  width: 8px;
+}
+
+.carouselScrollBar::-webkit-scrollbar-track {
+  background: #f1f1f1; 
+  border-radius: 6px;
+}
+ 
+.carouselScrollBar::-webkit-scrollbar-thumb {
+  background: rgb(136, 136, 137); 
+  border-radius: 6px;
+}
+
+.carouselScrollBar::-webkit-scrollbar-thumb:hover {
+  background: rgb(88, 88, 93); 
 }

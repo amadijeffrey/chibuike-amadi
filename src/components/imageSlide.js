@@ -18,7 +18,7 @@ class ImageSlide extends Component{
   background-repeat: no-repeat;
   height:100%;
   width: 100%;
-  max-width:288px;
+  min-width: 100%;
   transition: background-image .3s ease-in-out;
   `
   export default ImageSlide

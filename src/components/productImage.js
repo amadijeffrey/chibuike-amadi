@@ -16,7 +16,7 @@ class ProductImage extends Component{
 
     render(){
         return(
-            <div style={{display: 'flex'}}>
+            <div style={{display: 'flex', height: '350px', maxHeight: '350px'}}>
             <ImageList gallery={this.props.gallery} setSelectedImage={this.setSelectedImage}/>
             <SelectedImage selectedImage={this.state.selectedImage}/>
             </div>

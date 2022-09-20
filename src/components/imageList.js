@@ -19,8 +19,10 @@ class ImageList extends Component{
 }
 
 const Container = styled.div`
-width:79px;
-margin-right:39px;
+width:95px;
+margin-right:25px;
+max-height: 350px;
+overflow-Y: auto;
 `
 const ImageBox = styled.div`
 width: 79px;
