@@ -9,7 +9,7 @@ import Swal from 'sweetalert2';
 import { QuantityButton } from "./minicartItem";
 import { increaseQuantity } from '../actions/cartItemActions'
 import { decreaseQuantity } from '../actions/cartItemActions'
-
+import setCategory from '../actions/setCategory';
 
 
 export const GET_PRODUCTS_UNDER_CATEGORY = gql`
@@ -47,6 +47,16 @@ class ProductCategory extends Component{
     super(props)
 
     this.AddToCart = this.AddToCart.bind(this)
+  }
+
+  componentDidMount(){
+    this.props.setCategory(this.props.match.params.category)
+  }
+
+  componentDidUpdate(prevProps){
+    if(this.props.match.params.category !== prevProps.match.params.category){
+      this.props.setCategory(this.props.match.params.category)
+    }
   }
 
   AddToCart(cartData, e){
@@ -226,4 +236,4 @@ padding: 0px;
 align-self:flex-start;
 `
 
-export default connect(mapStateToProps, {createCartItem, increaseQuantity, decreaseQuantity})(ProductCategory);
+export default connect(mapStateToProps, {createCartItem, increaseQuantity, decreaseQuantity, setCategory})(ProductCategory);

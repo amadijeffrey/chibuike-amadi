@@ -16,7 +16,7 @@ class ImageSlide extends Component{
   background-size: contain;
   background-position: center;
   background-repeat: no-repeat;
-  height:100%;
+  height:98%;
   width: 100%;
   min-width: 100%;
   transition: background-image .3s ease-in-out;

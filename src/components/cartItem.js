@@ -61,7 +61,7 @@ padding-top: 24px;
 border-top: 1px solid lightgray;
 margin-bottom: 24px;
 `
-const QuantityButton = styled.div`
+export const QuantityButton = styled.div`
 width: 45px;
 height: 45px;
 border: 1px solid black;

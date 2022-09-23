@@ -4,7 +4,6 @@ import styled from 'styled-components'
 import { selectedPrice } from './productDetail'
 import { increaseQuantity } from '../actions/cartItemActions'
 import { decreaseQuantity } from '../actions/cartItemActions'
-import Carousel from './carousel'
 import ImageSlide from './imageSlide'
 
 class MiniCartItem extends Component{
@@ -46,7 +45,6 @@ render(){
                 <p>{qty}</p>
                 <QuantityButton onClick={() => this.props.decreaseQuantity(this.props.cartDetail)}>-</QuantityButton>
                 </Group>
-                {/* <Carousel width={121} imgUrls={gallery}/> */}
                 <div className='carouselScrollBar' style={{display: 'flex', height: '100%', width: '121px', maxWidth: '121px', overflowX: 'auto'}}>
                    {
                     gallery.map((image, i) => {
@@ -67,7 +65,6 @@ export default connect(null, {increaseQuantity, decreaseQuantity})(MiniCartItem)
 const Container = styled.div`
 display: flex;
 margin-bottom: 24px;
-// justify-content: space-between;
 `
 export const QuantityButton = styled.div`
 width: 24px;

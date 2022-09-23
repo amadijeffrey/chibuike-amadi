@@ -3,11 +3,10 @@ import styled from 'styled-components';
 import {connect} from 'react-redux'
 import { createCartItem } from '../actions/cartItemActions';
 import Swal from 'sweetalert2';
-import {Heading, QuantityButton, Group} from './minicartItem'
 import { increaseQuantity } from '../actions/cartItemActions'
 import { decreaseQuantity } from '../actions/cartItemActions'
 import parse from 'html-react-parser'
-
+import { QuantityButton} from './cartItem'
 
 class ProductDetail extends Component{
      constructor(props){
@@ -25,33 +24,28 @@ class ProductDetail extends Component{
      }
 
 
-      this.state = {isInCart: false, selected, itemsAlreadyInCart: [] }
+      this.state = {isInCart: false, selected,  foundProduct: {} }
       this.setSelectedState = this.setSelectedState.bind(this)
-      this.findItemsInCart = this.findItemsInCart.bind(this)
       this.addToCart = this.addToCart.bind(this)
-     }
-
-     componentDidMount(){
-     this.findItemsInCart()
-     }
-
-     componentDidUpdate(prevProps){
-      if(this.props.cart !== prevProps.cart){
-        this.findItemsInCart()
     }
-     }
 
-     findItemsInCart(){
-      const itemsAlreadyInCart = this.props.cart.filter(cartItem => cartItem.id === this.props.id)
-      this.setState({itemsAlreadyInCart})
-     }
+ 
+    componentDidUpdate(prevProps, prevState){
+       if(this.state.selected !== prevState.selected || this.props.cart !== prevProps.cart){
+        //find identical product in cart
+        const itemsAlreadyInCart = this.props.cart.filter(cartItem => cartItem.id === this.props.id)
+        const foundProduct =  itemsAlreadyInCart.find(cartItem => JSON.stringify(cartItem.selectedAttributes) === JSON.stringify(this.state.selected))
+        return foundProduct ? this.setState({isInCart: true, foundProduct}) : this.setState({isInCart: false})
+       } 
+    }
+
 
      setSelectedState(name,value){
       this.setState( prevState => ({selected: {...prevState.selected, [name]: value}}))
      }
 
      addToCart(){
-      const {itemsAlreadyInCart, selected} = this.state
+      const { selected} = this.state
 
       //check if product is in stock
       const {inStock} = this.props.data
@@ -60,9 +54,6 @@ class ProductDetail extends Component{
       //add product to cart if there are no attributes
       if(selected === null)return this.props.createCartItem(this.props.data)
 
-      //check if product is already in cart
-      const foundProduct =  itemsAlreadyInCart.find(cartItem => JSON.stringify(cartItem.selectedAttributes) === JSON.stringify(selected))
-      if(itemsAlreadyInCart.length > 0 && foundProduct) return this.setState({isInCart: true})
 
       //check if all attributes have been selected
       for(const keys in selected){
@@ -100,36 +91,21 @@ class ProductDetail extends Component{
                 }
                 <Title>price:</Title>
                 <Price>{`${selectedCurrency} ${newPrice}`}</Price>
-                <Button  onClick={() => this.addToCart()}>
-                  <p style={{fontWeight: 600,fontSize:'16px'}}>ADD TO CART</p>
-                </Button>
+                {
+                  this.state.isInCart ?
+                  <ButtonGroup>
+                    <QuantityButton style={{backgroundColor: '#5ECE7B', color: 'white'}} onClick={() => this.props.increaseQuantity(this.state.foundProduct)}>+</QuantityButton>
+                    <p style={{margin: '0px 5px'}}>{this.state.foundProduct.qty}</p>
+                    <QuantityButton style={{backgroundColor: '#5ECE7B', color: 'white'}} onClick={() => this.props.decreaseQuantity(this.state.foundProduct)}>-</QuantityButton>
+                  </ButtonGroup>
+                  :
+                  <Button  onClick={() => this.addToCart()}>
+                    <p style={{fontWeight: 600,fontSize:'16px'}}>ADD TO CART</p>
+                  </Button>
+                }
                 {parse(description)}
               </Box>
-              {
-                //display modal only when product is already in the cart
-               this.state.isInCart && <ModalContainer onClick={() => this.setState({isInCart: false})}>
-                <MiniCart>
-                  {
-                    this.state.itemsAlreadyInCart.map((cartItem) => {
-                      return <div key={JSON.stringify(cartItem.selectedAttributes)} style={{display: 'flex',marginBottom: '10px',justifyContent: 'space-between'}} >
-                      <div>
-                        { 
-                         Object.keys(cartItem.selectedAttributes).map(attributes => {
-                         return <Heading key={attributes}>{`${attributes}: ${cartItem.selectedAttributes[attributes]}`}</Heading>
-                         })
-                        }  
-                      </div>
-                        <Group style={{marginRight:'0px', marginLeft: '20px'}}>
-                        <QuantityButton onClick={() => this.props.increaseQuantity(cartItem)}> +</QuantityButton>
-                        <p>{cartItem.qty}</p>
-                        <QuantityButton onClick={() => this.props.decreaseQuantity(cartItem)}>-</QuantityButton>
-                        </Group>
-                      </div>
-                    })
-                  }
-                </MiniCart>
-               </ModalContainer>
-              }
+           
              </>
 
         )
@@ -154,25 +130,14 @@ font-size:24px;
 line-height:160%;
 color: black;
 `
-const ModalContainer = styled.div`
-position: fixed;
-top: 80px;
-bottom: 0px;
-left: 0px;
-right: 0px;
-background-color: rgba(0,0,0,0.5);
-`
-const MiniCart = styled.div`
-padding: 10px;
-position: absolute;
-right: 200px;
-top: 20%;
-background: white;
-z-index:20;
-width: auto;
-height: auto;
-max-height: 85%;
-overflow-y:auto;
+
+const ButtonGroup = styled.div`
+display: flex;
+justify-content:space-between;
+align-items:center;
+width: 292px;
+margin: 10px 0px;
+
 `
 
 const Button = styled.button`
